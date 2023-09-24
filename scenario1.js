@@ -58,32 +58,44 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
     let connectButtonElement5;
     let buttonText4;
     let buttonText5;
+    let elementExists4; 
+    let elementExists5; 
     try{
-        connectButtonElement4= await driver.findElement(By.xpath(connectButtonXPath4));
-        connectButtonElement5 = await driver.findElement(By.xpath(connectButtonXPath5));
-        buttonText4 = await connectButtonElement4.getText();
-        buttonText5 = await connectButtonElement5.getText();
+        // connectButtonElement4= await driver.findElement(By.xpath(connectButtonXPath4));
+        // connectButtonElement5 = await driver.findElement(By.xpath(connectButtonXPath5));
+        // buttonText4 = await connectButtonElement4.getText();
+        // buttonText5 = await connectButtonElement5.getText();
+
+        // Check if the element exists
+        elementExists4 = await driver.findElements(By.xpath(connectButtonXPath4));
+        elementExists5 = await driver.findElements(By.xpath(connectButtonXPath5));
+        console.log("elementExists4 found is "+elementExists4)
+        console.log("elementExists5 found is "+elementExists5)
+    
     }catch(e){
         // do nothing
     }
 
     let value = 4;
-    if(buttonText4==null || buttonText4==undefined){
+    if(elementExists5.length > 0){
         value = 5;
     }
     console.log("value found is "+value)
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 3; i++) {
+        await driver.sleep(3000);
+    for (let j = 1; j <= 10; j++) {
 
         await driver.sleep(5000);
-        const connectButtonXPath = `/html/body/div[${value}]/div[3]/div[2]/div/div[1]/main/div/div/div[2]/div/ul/li[${i}]/div/div/div[3]/div/button/span`;
+        const connectButtonXPath = `/html/body/div[${value}]/div[3]/div[2]/div/div[1]/main/div/div/div[2]/div/ul/li[${j}]/div/div/div[3]/div/button/span`;
+        
 
-        const connectButtonElement = await driver.findElement(By.xpath(connectButtonXPath));
-        const buttonText = await connectButtonElement.getText();
+        // const connectButtonElement = await driver.findElement(By.xpath(connectButtonXPath));
+        // const buttonText = await connectButtonElement.getText();
      
-
-        if(!buttonText=="Connect"){
-            continue;
-        }
+        // console.log("text on button is:"+buttonText)
+        // if(!buttonText=="Connect"){
+        //     continue;
+        // }
                                     
         // Wait for the "Connect" button to appear and click it
        driver.wait(until.elementLocated(By.xpath(connectButtonXPath)), 30000)
@@ -113,11 +125,11 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
 
                         driver.wait(until.elementLocated(By.xpath(textareaXPath)), 30000)
                             .then(async element => {
-                                await driver.sleep(1000);
+                                await driver.sleep(2000);
                                 return element.sendKeys(process.env.MESSAGE_TO_CONNECTION);  // Send the note
                             })
                             .then(async() => {
-                                await driver.sleep(1000);
+                                await driver.sleep(2000);
                                 return driver.wait(until.elementLocated(By.xpath(submitButtonXPath)), 30000);  // Wait for the button
                             })
                             .then(async button => {
@@ -129,11 +141,16 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
                                 console.log("Error submitting note: ", err);
                             });
                     });
-            });
+            });      
+        }
+        const clickNextPage = '/html/body/div[${value}]/div[3]/div[2]/div/div[1]/main/div/div/div[5]/div/div/button[2]/span';
 
-            
+        driver.wait(until.elementLocated(By.xpath(clickNextPage)), 30000)
+            .then(async element => {
+                await driver.sleep(1000);
+                return button.click();  // Click the button to navigate to next page
+        })
     }
-
 })
 .catch(err => {
 console.log("Error: ", err);

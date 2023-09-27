@@ -62,15 +62,8 @@ const searchTitle = process.env.SEARCH_TITLE;
 
             console.log(`Found member with first name: ${firstName}`);
             await driver.sleep(5000);
-            // let messageButton = await member.findElement(By.xpath(".//button[@aria-label='Message ']"));
-            // await messageButton.click();
-
             let messageButton = await member.findElement(By.xpath(".//button[@aria-label='Message ']"));
-            await driver.executeScript("arguments[0].scrollIntoView(true);", messageButton);
-            await driver.sleep(1000);  // give it a second to scroll
             await messageButton.click();
-
-
 
             await driver.wait(until.elementLocated(By.css("div[aria-label='Write a message…']")), 5000);
 
@@ -92,6 +85,19 @@ const searchTitle = process.env.SEARCH_TITLE;
             }
 
             await driver.sleep(5000);
+
+            ;
+
+            await driver.executeScript(`
+                    var xpath = "//button[.//text()[contains(., 'Close your conversation')]]";
+                    var matchingElement = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    if (matchingElement) {
+                        matchingElement.click();
+                    } else {
+                        console.log("Element not found");
+                    }
+            `);
+
 
             
 

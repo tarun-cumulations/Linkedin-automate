@@ -33,39 +33,20 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
     .then(button => {
         return button.click();
     })
-    .then(async () => {
+    .then(() => {
+
+        // first page
+        /*
 
         driver.get("https://www.linkedin.com/search/results/people/?industry=%5B%2296%22%2C%221594%22%2C%226%22%5D&keywords=people&network=%5B%22S%22%2C%22O%22%5D&origin=FACETED_SEARCH&sid=WPt");
-        
-        for(let i=1;i<=process.env.NUM_OF_PAGES;i++){
 
-            for(let j=1;j<=10;j++){
+        */
 
-                    await driver.sleep(5000);
-                    let skipIteration = false;
-                    // FIND ALL THE CONNECT BUTTONS
-                    try{
-                    const connectButtonXPath = "//button[span[text()='Connect']]";
-                    let connectButton = await driver.wait(until.elementLocated(By.xpath(connectButtonXPath)), 30000);
-                    await connectButton.click();
-                    }catch(e){
-                        j=11;
-                        skipIteration = true;
-                    }
+        //second page 
 
-                    if(skipIteration){
-                        continue;
-                    }
-                    // CLICK ON ADD A NOTE BUTTON
-                    await driver.sleep(4000);
+        driver.get("https://www.linkedin.com/search/results/people/?industry=%5B%2296%22%2C%221594%22%2C%226%22%5D&keywords=people&network=%5B%22S%22%2C%22O%22%5D&origin=FACETED_SEARCH&page=2&sid=%40KR");
 
-                    const addButtonXPath = "//button[span[text()='Add a note']]";
-                    let addButton = await driver.wait(until.elementLocated(By.xpath(addButtonXPath)), 30000);
-                    await addButton.click();
-                    
-                    await driver.sleep(4000);
 
-<<<<<<< HEAD
     })
     .then(async() => {
     // Loop for clicking the "Connect" button and adding a note 5 times
@@ -73,10 +54,6 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
     
     const connectButtonXPath4 = `/html/body/div[4]/div[3]/div[2]/div/div[1]/main/div/div/div[1]/h2/div`;
     const connectButtonXPath5 = `/html/body/div[5]/div[3]/div[2]/div/div[1]/main/div/div/div[1]/h2/div`;
-    let connectButtonElement4;
-    let connectButtonElement5;
-    let buttonText4;
-    let buttonText5;
     let elementExists4; 
     let elementExists5; 
     try{
@@ -100,9 +77,9 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
         value = 5;
     }
     console.log("value found is "+value)
-    for (let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 2; i++) {
         await driver.sleep(3000);
-    for (let j = 1; j <= 10; j++) {
+    for (let j = 5; j <= 7; j++) {
 
         await driver.sleep(5000);
         const connectButtonXPath = `/html/body/div[${value}]/div[3]/div[2]/div/div[1]/main/div/div/div[2]/div/ul/li[${j}]/div/div/div[3]/div/button/span`;
@@ -122,7 +99,7 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
                 return element.click();  // Click the button
             })
             .catch(err => {
-                console.log("Error clicking 'Connect' button: ", err);
+                //console.log("Error clicking 'Connect' button: ", err);
             })
             .then(() => {
                 // Full XPath for the button to add a note
@@ -162,42 +139,19 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
                     });
             });      
         }
-        const clickNextPage = '/html/body/div[${value}]/div[3]/div[2]/div/div[1]/main/div/div/div[5]/div/div/button[2]/span';
+        const clickNextPage = `/html/body/div[${value}]/div[3]/div[2]/div/div[1]/main/div/div/div[5]/div/div/button[2]/span`;
 
-        driver.wait(until.elementLocated(By.xpath(clickNextPage)), 30000)
-            .then(async element => {
-                await driver.sleep(1000);
-                return button.click();  // Click the button to navigate to next page
-        })
+        // driver.wait(until.elementLocated(By.xpath(clickNextPage)), 30000)
+        //     .then(async element => {
+        //         await driver.sleep(1000);
+        //         return button.click();  // Click the button to navigate to next page
+        // })
+
+        let nextButton = await driver.findElement(By.xpath("//button[@type='button'][span[text()='Next']]"));
+        await nextButton.click();
+
     }
 })
-=======
-                    // FIND TEXTAREA AND ADD MESSAGE
-
-                    const textareaXPath = "//textarea[@id='custom-message']";
-                    let textarea = await driver.wait(until.elementLocated(By.xpath(textareaXPath)), 30000);
-                    await textarea.sendKeys(process.env.MESSAGE_TO_CONNECTION);
-                        
-                    // FIND SUBMIT AND CLICK
-                    await driver.sleep(6000);
-                    const sendButtonXPath = "//button[span[text()='Send']]";
-                    let sendButton = await driver.wait(until.elementLocated(By.xpath(sendButtonXPath)), 30000);
-                    await sendButton.click();
-                    
-
-            }
-            console.log("Outsideeee "+i)
-
-            const connectButtonXPath = "//button[@type='button'][span[text()='Next']]";
-            let connectButton = await driver.wait(until.elementLocated(By.xpath(connectButtonXPath)), 30000);
-            await connectButton.click();
-        }
-     }  
-    )
-    .then(async() => {
-        
-    })
->>>>>>> 21a22db93359d48248a0bc238d9b6840cede1a6f
 .catch(err => {
-    console.log("Error: ", err);
+console.log("Error: ", err);
 });

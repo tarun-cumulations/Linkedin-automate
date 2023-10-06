@@ -22,7 +22,7 @@ const searchTitle = process.env.SEARCH_TITLE;
     logger.info("EXECUTING SCENARIO 2 - MESSAGE THE 1st CONNECTIONS");
 
     await driver.get("https://in.linkedin.com/");
-    logger.info("ON THE HOME SCREEN OF LINKED");
+    logger.info("ON THE HOME SCREEN OF LINKEDIN");
 
     let element = await driver.wait(until.elementLocated(By.id('session_key')), 10000);
     await driver.executeScript(`arguments[0].value = "${linkedin_username}";`, element);
@@ -47,14 +47,14 @@ const searchTitle = process.env.SEARCH_TITLE;
         logger.info("Modify the search title in .env and try again :)");
         return;
     } else {
-
+        let firstNames = []
         for(let i=1;i<=process.env.NUM_OF_PAGES;i++){
 
                 logger.info(`First connections are found with searchTitle ${searchTitle}`);
 
                 await driver.wait(until.elementLocated(By.className('entity-result')), 10000);
                 let members = await driver.findElements(By.className('entity-result'));
-
+                
                 for (let member of members) {
                     let nameElem = await member.findElement(By.className('entity-result__title-text'));
                     let fullText = await nameElem.getText();
@@ -62,8 +62,12 @@ const searchTitle = process.env.SEARCH_TITLE;
                     // Use regex to find the first word in the string
                     let match = fullText.match(/(\w+)\s/);
                     let firstName = match ? match[1] : "Connection";
-
+                    if(firstNames.includes(firstName)){
+                        logger.info("Found "+firstName+" again");
+                        continue;
+                    }
                     console.log(`Found member with first name: ${firstName}`);
+                    firstNames.push(firstName)
                     await driver.sleep(5000);
                     let messageButton = await member.findElement(By.xpath(".//button[@aria-label='Message ']"));
                     await messageButton.click();
@@ -101,7 +105,7 @@ const searchTitle = process.env.SEARCH_TITLE;
                             }
                     `);
             }
-            console.log("Outsideeee "+i)
+            // console.log("Outsideeee "+i)
             const connectButtonXPath = "//button[@type='button'][span[text()='Next']]";
             let connectButton = await driver.wait(until.elementLocated(By.xpath(connectButtonXPath)), 30000);
             await connectButton.click();

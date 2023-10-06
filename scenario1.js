@@ -39,13 +39,20 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
         await driver.get(`https://www.linkedin.com/search/results/people/?industry=%5B%2296%22%2C%221594%22%2C%226%22%5D&keywords=${searchTitle}&network=%5B%22S%22%2C%22O%22%5D&origin=FACETED_SEARCH&sid=WPt`);
         
         for(let i=1;i<=process.env.NUM_OF_PAGES;i++){
-
+            let firstName = ""
             for(let j=1;j<=10;j++){
 
                     await driver.sleep(5000);
                     let skipIteration = false;
                     // FIND ALL THE CONNECT BUTTONS
                     try{
+
+                        let fullName = await driver.executeScript("return document.querySelector('.entity-result__title-text.t-16 a').textContent.trim();")
+
+                        const match = fullName.match(/^(\w+)\s/);
+                         firstName = match ? match[1] : "Connection";
+                
+
                     const connectButtonXPath = "//button[span[text()='Connect']]";
                     let connectButton = await driver.wait(until.elementLocated(By.xpath(connectButtonXPath)), 30000);
                     await connectButton.click();
@@ -70,7 +77,7 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
 
                     const textareaXPath = "//textarea[@id='custom-message']";
                     let textarea = await driver.wait(until.elementLocated(By.xpath(textareaXPath)), 30000);
-                    await textarea.sendKeys(process.env.MESSAGE_TO_CONNECTION);
+                    await textarea.sendKeys(`Hello ${firstName}\n${process.env.MESSAGE_TO_CONNECTION}`);
                         
                     // FIND SUBMIT AND CLICK
                     await driver.sleep(6000);

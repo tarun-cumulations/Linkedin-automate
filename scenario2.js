@@ -23,21 +23,36 @@ const searchTitle = process.env.SEARCH_TITLE;
 
     await driver.get("https://in.linkedin.com/");
     logger.info("ON THE HOME SCREEN OF LINKEDIN");
-
+    console.log("Recahed till here 26")
     let element = await driver.wait(until.elementLocated(By.id('session_key')), 10000);
     await driver.executeScript(`arguments[0].value = "${linkedin_username}";`, element);
 
     element = await driver.wait(until.elementLocated(By.id('session_password')), 10000);
     await driver.executeScript(`arguments[0].value = "${linkedin_password}";`, element);
-
+    console.log("Recahed till here 32")
     const complexSelector = "#main-content > section > div > div > form > div.flex.justify-between > button";
     let button = await driver.wait(until.elementLocated(By.css(complexSelector)), 10000);
-
+    console.log("Recahed till here 26")
     logger.info("SUCCESSFULLY LOGGED IN");
     await button.click();
+    let currentURL = await driver.getCurrentUrl();
 
+    if(currentURL.includes("challenge")||currentURL.includes("cold-join")){
+
+        console.log("SECURITY CHECK , PLEASE TRY AGAIN");
+        logger.error("SECURITY CHECK , PLEASE TRY AGAIN");
+        
+        await driver.findElement(By.css('input[name="email-or-phone"]')).sendKeys(linkedin_username);
+
+        await driver.findElement(By.css('input[name="password"]')).sendKeys(linkedin_password);
+
+        await driver.findElement(By.id('join-form-submit')).click();
+
+        
+    }
+  
     await driver.get(`https://www.linkedin.com/search/results/people/?network=["F"]&origin=FACETED_SEARCH&sid=jiE&titleFreeText=${searchTitle}`);
-
+    console.log("Recahed till here 40")
     const noResultsXPath = '/html/body/div[5]/div[3]/div[2]/div/div[1]/main/div/div/div/section/h2';
     let elements = await driver.findElements(By.xpath(noResultsXPath));
 

@@ -97,12 +97,6 @@ const searchTitle = process.env.SEARCH_TITLE;
                         console.log("Element not found");
                     }
             `);
-
-
-            
-
-
-
         }
     }
 })().catch(err => {

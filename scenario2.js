@@ -107,6 +107,6 @@ const searchTitle = process.env.SEARCH_TITLE;
             await connectButton.click();
         }
     }
-}).catch(err => {
+})().catch(err => {
     console.log("Error: ", err);
 });

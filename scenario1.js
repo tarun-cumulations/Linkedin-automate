@@ -15,6 +15,7 @@ driver.get("https://in.linkedin.com/");
 
 const linkedin_username = process.env.LINKEDIN_USERNAME;
 const linkedin_password = process.env.LINKEDIN_PASSWORD;
+const searchTitle = process.env.SEARCH_TITLE;
 
 driver.wait(until.elementLocated(By.id("session_key")), 10000)
     .then(element => {
@@ -35,7 +36,7 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
     })
     .then(async () => {
 
-        driver.get("https://www.linkedin.com/search/results/people/?industry=%5B%2296%22%2C%221594%22%2C%226%22%5D&keywords=people&network=%5B%22S%22%2C%22O%22%5D&origin=FACETED_SEARCH&sid=WPt");
+        await driver.get(`https://www.linkedin.com/search/results/people/?industry=%5B%2296%22%2C%221594%22%2C%226%22%5D&keywords=${searchTitle}&network=%5B%22S%22%2C%22O%22%5D&origin=FACETED_SEARCH&sid=WPt`);
         
         for(let i=1;i<=process.env.NUM_OF_PAGES;i++){
 

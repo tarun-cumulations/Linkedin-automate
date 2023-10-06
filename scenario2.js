@@ -1,13 +1,8 @@
-let dotenv=require('dotenv');
+let dotenv = require('dotenv');
 const winston = require('winston');
-dotenv.config()
+const { Builder, By, until } = require('selenium-webdriver');
 
-let webdriver = require("selenium-webdriver");
-let By = webdriver.By;
-let until = webdriver.until;
-
-require("chromedriver");
-
+dotenv.config();
 
 const logger = winston.createLogger({
     level: 'info',
@@ -17,134 +12,105 @@ const logger = winston.createLogger({
     ]
 });
 
-let driver = new webdriver.Builder()
-    .forBrowser("chrome")
-    .build();
+const linkedin_username = process.env.LINKEDIN_USERNAME;
+const linkedin_password = process.env.LINKEDIN_PASSWORD;
+const searchTitle = process.env.SEARCH_TITLE;
 
+(async () => {
+    let driver = await new Builder().forBrowser('chrome').build();
 
-logger.info("EXCUTING SCENARIO 2 - MESSAGE THE 1st CONNECTIONS")
+    logger.info("EXECUTING SCENARIO 2 - MESSAGE THE 1st CONNECTIONS");
 
+    await driver.get("https://in.linkedin.com/");
+    logger.info("ON THE HOME SCREEN OF LINKEDIN");
 
-driver.get("https://in.linkedin.com/");
-logger.info("ON THE HOME SCREEN OF LINKED")
+    let element = await driver.wait(until.elementLocated(By.id('session_key')), 10000);
+    await driver.executeScript(`arguments[0].value = "${linkedin_username}";`, element);
 
-let linkedin_username = process.env.LINKEDIN_USERNAME
-let linkedin_password = process.env.LINKEDIN_PASSWORD
-let searchTitle = process.env.SEARCH_TITLE;
-let messageToConn = process.env.MESSAGE_TO_CONNECTION
+    element = await driver.wait(until.elementLocated(By.id('session_password')), 10000);
+    await driver.executeScript(`arguments[0].value = "${linkedin_password}";`, element);
 
-driver.wait(until.elementLocated(By.id("session_key")), 10000)
-    .then(element => {
-        return driver.executeScript(`arguments[0].value = "${linkedin_username}";`, element);
-    })
-    .then(() => {
-        return driver.wait(until.elementLocated(By.id("session_password")), 10000);
-    })
-    .then(element => {
-        return driver.executeScript(`arguments[0].value = "${linkedin_password}";`, element);
-    })
-    .then(() => {
-        let complexSelector = "#main-content > section.section.min-h-\\[560px\\].flex-nowrap.pt-\\[40px\\].babybear\\:flex-col.babybear\\:min-h-\\[0\\].babybear\\:px-mobile-container-padding.babybear\\:pt-\\[24px\\] > div > div > form > div.flex.justify-between.sign-in-form__footer--full-width > button";
-        return driver.wait(until.elementLocated(By.css(complexSelector)), 10000);
-    })
-    .then(button => {
+    const complexSelector = "#main-content > section > div > div > form > div.flex.justify-between > button";
+    let button = await driver.wait(until.elementLocated(By.css(complexSelector)), 10000);
 
-        logger.info("SUCCESSFULLY LOGGED IN");
-        return button.click();
-        
-    })
-    .then(()=>{
-        driver.get(`https://www.linkedin.com/search/results/people/?network=%5B%22F%22%5D&origin=FACETED_SEARCH&sid=jiE&titleFreeText=${searchTitle}`)
-    }).then(()=>{
+    logger.info("SUCCESSFULLY LOGGED IN");
+    await button.click();
 
-        // XPath for the element that indicates "no results"
-        const noResultsXPath = '/html/body/div[5]/div[3]/div[2]/div/div[1]/main/div/div/div/section/h2';
+    await driver.get(`https://www.linkedin.com/search/results/people/?network=["F"]&origin=FACETED_SEARCH&sid=jiE&titleFreeText=${searchTitle}`);
 
-        // Check for the "no results" element
-        driver.findElements(By.xpath(noResultsXPath))
-            .then(elements => {
-                if (elements.length > 0) {
-                    logger.info(`NO RESULTS WERE FOUND FOR SEARCH TITLE${searchTitle}`)
-                    logger.info("EXITING")
-                    logger.info("Modify the search title in .env and try again :)")
-                    throw new Error("No results found.");
-                }else{
-                    logger.info(`First connections are found with searchTitle ${searchTitle}`);
+    const noResultsXPath = '/html/body/div[5]/div[3]/div[2]/div/div[1]/main/div/div/div/section/h2';
+    let elements = await driver.findElements(By.xpath(noResultsXPath));
 
-                    // XPath pattern that matches the buttons
-                    const buttonsXPath = '/html/body/div[5]/div[3]/div[2]/div/div[1]/main/div/div/div[2]/div/ul/li[1]/div/div/div[3]/div/div/button';
-                    // XPath for the element containing the name
-                    const nameXPath = '/html/body/div[5]/div[4]/aside/div[2]/div[1]/div/div[1]/div/div/section/div/button[1]/span';
+    if (elements.length > 0) {
+        logger.info(`NO RESULTS WERE FOUND FOR SEARCH TITLE ${searchTitle}`);
+        logger.info("EXITING");
+        logger.info("Modify the search title in .env and try again :)");
+        return;
+    } else {
+        let firstNames = []
+        for(let i=1;i<=process.env.NUM_OF_PAGES;i++){
+
+                logger.info(`First connections are found with searchTitle ${searchTitle}`);
+
+                await driver.wait(until.elementLocated(By.className('entity-result')), 10000);
+                let members = await driver.findElements(By.className('entity-result'));
                 
-                    // Find all buttons matching the XPath pattern
-                    driver.findElements(By.xpath(buttonsXPath))
-                        .then(buttons => {
-                            // Sequentially click all buttons and then get the name
-                            return buttons.reduce((acc, button) => {
-                                return acc.then(() => button.click())  // Click the button
-                                          .then(() => driver.sleep(5000))  // Optional sleep between clicks
-                                          .then(() => driver.findElement(By.xpath(nameXPath)))  // Find the element containing the name
-                                          .then(nameElement => nameElement.getText())  // Get the text of the name element
-                                          .then(name => {
+                for (let member of members) {
+                    let nameElem = await member.findElement(By.className('entity-result__title-text'));
+                    let fullText = await nameElem.getText();
+                    
+                    // Use regex to find the first word in the string
+                    let match = fullText.match(/(\w+)\s/);
+                    let firstName = match ? match[1] : "Connection";
+                    if(firstNames.includes(firstName)){
+                        logger.info("Found "+firstName+" again");
+                        continue;
+                    }
+                    console.log(`Found member with first name: ${firstName}`);
+                    firstNames.push(firstName)
+                    await driver.sleep(5000);
+                    let messageButton = await member.findElement(By.xpath(".//button[@aria-label='Message ']"));
+                    await messageButton.click();
 
-                                              let connectionName = name;
-                                              let message = `Hello ${connectionName} \n${messageToConn}`
-                                              logger.info(`Fetched name is: ${name}`);  
-                                              logger.info(`CONSTRUCTED MESSAGE :`)
+                    await driver.wait(until.elementLocated(By.css("div[aria-label='Write a message…']")), 5000);
 
-                                              // XPath for the element where you want to input the message
-                                            const messageXPath = '/html/body/div[5]/div[4]/aside/div[2]/div[1]/div/form/div[2]/div/div[1]/div[1]/p';
+                    // Locate the contenteditable div using its aria-label and send the message
+                    try {
+                        let messageBox = await driver.findElement(By.css("div[aria-label='Write a message…']"));
+                        await messageBox.sendKeys(`Hi ${firstName}\n${process.env.MESSAGE_TO_CONNECTION}`);
+                    } catch (err) {
+                        console.log("Could not find the message box:", err);
+                    }
+                    
+                    await driver.sleep(5000);
 
-                        
-                                            // Wait for the element to appear and then input the message
-                                            driver.wait(until.elementLocated(By.xpath(messageXPath)), 10000)
-                                                .then(element => {
-                                                    return element.sendKeys(message);  // Input the message
-                                                }).then(()=>{
-                                                    // click send
-                                                    
-                                                   // Class name for the 'Send' button
-                                                    const sendButtonClass = 'msg-form__send-button';
+                    try {
+                        let sendButton = await driver.findElement(By.xpath("//button[text()='Send']"));
+                        await sendButton.click();
+                    } catch (err) {
+                        console.log("Could not find the Send button:", err);
+                    }
 
-                                                    // Wait for the button to appear
-                                                    driver.wait(until.elementLocated(By.className(sendButtonClass)), 10000)
-                                                        .then(button => {
-                                                            return driver.sleep(2000)  // Wait for an extra 2 seconds to make sure the button is clickable
-                                                                    .then(() => button.click());  // Then click the 'Send' button
-                                                        })
-                                                        .catch(err => {
-                                                            logger.error(`Error: ${err}`);
-                                                        });
+                    await driver.sleep(5000);
 
-                                                
+                    ;
 
-                                                })
-                                                .catch(err => {
-                                                    logger.error(`Error: ${err}`);
-                                                });
-
-
-                                          })
-                                          .catch(err => {
-                                              logger.error(`Error in loop: ${err}`);
-                                          });
-                            }, Promise.resolve());
-                        })
-                        .catch(err => {
-                            logger.error(`Error: ${err}`);
-                        });
-
-                }
-            })
-            .catch(err => {
-                console.log("Error: ", err);
-            });
-
-    })
-    .catch(err => {
-        console.log("Error: ", err);
-    });
-
-
-
-
+                    await driver.executeScript(`
+                            var xpath = "//button[.//text()[contains(., 'Close your conversation')]]";
+                            var matchingElement = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                            if (matchingElement) {
+                                matchingElement.click();
+                            } else {
+                                console.log("Element not found");
+                            }
+                    `);
+            }
+            // console.log("Outsideeee "+i)
+            const connectButtonXPath = "//button[@type='button'][span[text()='Next']]";
+            let connectButton = await driver.wait(until.elementLocated(By.xpath(connectButtonXPath)), 30000);
+            await connectButton.click();
+        }
+    }
+})().catch(err => {
+    console.log("Error: ", err);
+});

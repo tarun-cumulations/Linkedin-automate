@@ -66,18 +66,62 @@ async function salesNavigator() {
             // Perform some action when the span contains 'free'
             // add message
             await driver.sleep(5000);
+           
+            // Find the input element by its placeholder attribute
+            const placeholderText = "Subject (required)";
+            const textToAdd = "Your text goes here";
+            
+            // Execute script to add text to the input field using keyboard events
+            await driver.executeScript(
+                (placeholder, text) => {
+                    const inputElement = document.querySelector(`input[placeholder="${placeholder}"]`);
+                    if (inputElement) {
+                        // Focus on the input element
+                        inputElement.focus();
+            
+                        // Simulate keydown event
+                        const keydownEvent = new KeyboardEvent('keydown', {
+                            key: 'a', // Replace with the key you want to simulate (e.g., 'a')
+                        });
+                        inputElement.dispatchEvent(keydownEvent);
+            
+                        // Simulate keypress event
+                        const keypressEvent = new KeyboardEvent('keypress', {
+                            key: 'a', // Replace with the key you want to simulate (e.g., 'a')
+                        });
+                        inputElement.dispatchEvent(keypressEvent);
+            
+                        // Add text to the input field
+                        inputElement.value = text;
+            
+                        // Simulate keyup event
+                        const keyupEvent = new KeyboardEvent('keyup', {
+                            key: 'a', // Replace with the key you want to simulate (e.g., 'a')
+                        });
+                        inputElement.dispatchEvent(keyupEvent);
+                    }
+                },
+                placeholderText,
+                textToAdd
+            );
+            
+
             // Locate the textarea element using the name attribute
-            const textArea = await driver.findElement(By.name('message'));
+            //const textArea = await driver.findElement(By.name('message'));
 
             // Type 'Hi' into the textarea
-            await textArea.sendKeys('Hi');
+            //await textArea.sendKeys('Hi');
 
             // send msg
 
             // close
+            // Create an XPath selector to find the <li-icon> element by its type attribute
+            const xpathSelector = '//li-icon[@type="cancel-icon"]';
 
-            const closeButton = await driver.findElement(By.css('.artdeco-button.artdeco-button--circle.artdeco-button--inverse'));
-            await closeButton.click();
+            // Find and click the element using the XPath selector
+            await driver.findElement(By.xpath(xpathSelector)).click();
+            //const closeButton = await driver.findElement(By.css('.artdeco-button.artdeco-button--circle.artdeco-button--inverse'));
+            
         } else {
             // Perform a different action when the span does not contain 'free'
             console.log("Credits required to perform, hence skipping")

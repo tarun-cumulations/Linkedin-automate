@@ -72,8 +72,6 @@ async function salesNavigator() {
             await driver.sleep(20000)
         }
 
-
-
     }
 
     await driver.get("https://www.linkedin.com/sales?trk=d_flagship3_nav&");
@@ -102,44 +100,19 @@ async function salesNavigator() {
             // Scroll the search results container by 500 pixels vertically
             await driver.executeScript('arguments[0].scrollTop += 500;', searchResultsContainer);
 
-
-            //await driver.sleep(10000);
-
-            // const linkedinPremiumIcons = await li.findElements(By.css('li-icon[type="linkedin-premium-gold-icon"][size="small"]'));
-
-            // console.log("linked status")
-
-            // console.log(linkedinPremiumIcons)
-
-
-            // const updatedLi = await driver.findElement(By.css(`li.artdeco-list__item[id="${li.getAttribute("id")}"]`));
-
-            // const linkedinPremiumIcons = await updatedLi.findElements(By.css('li-icon[type="linkedin-premium-gold-icon"][size="small"]'));
-            //let linkedinPremiumIcons
-
-            if (true) {
-
                 await driver.sleep(3000);
                 console.log("NEW CONTAIN LOGO CHECK - EXIST");
-                // const messageButton = await li.findElement(By.css('ul.list-style-none.inline-flex > li:nth-child(2) > button'));
-
-                // // Click the second button
-                // await messageButton.click();
-
-                // const updatedLi = await driver.findElement(By.css(`li.artdeco-list__item[id="${await li.getAttribute("id")}"]`));
-                // const messageButton = await updatedLi.findElement(By.css('ul.list-style-none.inline-flex > li:nth-child(2) > button'));
-                // await messageButton.click();
+                
 
                 const listMessageBtn = `/html/body/main/div[1]/div[2]/div[2]/div/ol/li[${j}]/div/div/div[2]/div[2]/ul/li[2]/button`;
                 const buttonElement = await driver.findElement(By.xpath(listMessageBtn));
                 await buttonElement.click();
 
-                ///html/body/main/div[1]/div[2]/div[2]/div/ol/li[1]/div/div/div[2]/div[2]/ul/li[2]/button
 
                 const textToCheck = "Free"; 
                 const creditsXpath= '//*[@id="message-overlay"]/section/div[2]/section/div[2]/div/span[2]';
                 
-                const containsFree = null;
+                let containsFree = null;
                 
                 try{
                     containsFree = await checkSpanForText(driver, creditsXpath, textToCheck);
@@ -149,48 +122,20 @@ async function salesNavigator() {
                     continue;
                 }
                 if (containsFree) {
-                    // Perform some action when the span contains 'free'
-                    // add message
-                    //await driver.sleep(5000);
-                
+                    
+                    console.log("CONTAINS FREEE")
                     // Find the input element by its placeholder attribute
-                    const placeholderText = "Subject (required)";
                     const textToAdd = process.env.SUBJECT_FOR_SALES;
+
+                    const placeholderText = "Subject (required)";
+                    const subjectInput = await driver.findElement(By.css(`input[placeholder="${placeholderText}"]`));
+
+                    // Add "hi" to the subject input
+                    await subjectInput.sendKeys(textToAdd);
+
                     
-                    // Execute script to add text to the input field using keyboard events
-                    await driver.executeScript(
-                        (placeholder, text) => {
-                            const inputElement = document.querySelector(`input[placeholder="${placeholder}"]`);
-                            if (inputElement) {
-                                // Focus on the input element
-                                inputElement.focus();
                     
-                                // Simulate keydown event
-                                const keydownEvent = new KeyboardEvent('keydown', {
-                                    key: 'a', // Replace with the key you want to simulate (e.g., 'a')
-                                });
-                                inputElement.dispatchEvent(keydownEvent);
-                    
-                                // Simulate keypress event
-                                const keypressEvent = new KeyboardEvent('keypress', {
-                                    key: 'a', // Replace with the key you want to simulate (e.g., 'a')
-                                });
-                                inputElement.dispatchEvent(keypressEvent);
-                    
-                                // Add text to the input field
-                                inputElement.value = text;
-                    
-                                // Simulate keyup event
-                                const keyupEvent = new KeyboardEvent('keyup', {
-                                    key: 'a', // Replace with the key you want to simulate (e.g., 'a')
-                                });
-                                inputElement.dispatchEvent(keyupEvent);
-                            }
-                        },
-                        placeholderText,
-                        textToAdd
-                    );
-                    
+
 
                     //Locate the textarea element using the name attribute
                     const textArea = await driver.findElement(By.name('message'));
@@ -198,12 +143,18 @@ async function salesNavigator() {
                     // message body
                     await textArea.sendKeys(`Hi\n${process.env.MESSAGE_BODY_FOR_SALES}`);
 
-                    const buttonXPath = '/html/body/div[8]/section/div[2]/section/div[2]/form[1]/section/span[2]/button';
-                    const buttonElement = await driver.findElement(By.xpath(buttonXPath));
-                    await buttonElement.click();
+                    // const buttonXPath = '/html/body/div[8]/section/div[2]/section/div[2]/form[1]/section/span[2]/button';
+                    // const buttonElement = await driver.findElement(By.xpath(buttonXPath));
+                    // await buttonElement.click();
+
+                    await subjectInput.sendKeys(textToAdd);
+
+
 
 
                     // close
+
+                    await driver.sleep(10000)
                         
                     const closeButton = await driver.findElement(By.xpath('/html/body/div[8]/section/header/button[2]'));
                     await closeButton.click();
@@ -213,20 +164,8 @@ async function salesNavigator() {
                     // Perform a different action when the span does not contain 'free'
                     console.log("Credits required to perform, hence skipping")
                 }
-            } else {
-                console.log("LINKEDIN GOLD LOGO DOES NOT EXIST");
-               
-            }
-
-       
-    
-        }
-
-
-
-
-    
-}
+        }  
+    }
 }
 
 

@@ -130,58 +130,68 @@ async function salesNavigator() {
                     const placeholderText = "Subject (required)";
                     const subjectInput = await driver.findElement(By.css(`input[placeholder="${placeholderText}"]`));
 
+                    await driver.sleep(3000)
+
+                    // Calculate the midpoint index
+                    const midpoint = Math.floor(textToAdd.length / 2);
+                    
+                    // Split the string into two halves
+                    const firstHalfSubject = textToAdd.substring(0, midpoint);
+                    const secondHalfSubject = textToAdd.substring(midpoint);
+
                     // Add "hi" to the subject input
-                    await subjectInput.sendKeys(textToAdd);
-
-                    
-                    
-
+                    await subjectInput.sendKeys(firstHalfSubject);
 
                     //Locate the textarea element using the name attribute
                     const textArea = await driver.findElement(By.name('message'));
 
+                    await driver.sleep(3000)
                     // message body
                     await textArea.sendKeys(`Hi\n${process.env.MESSAGE_BODY_FOR_SALES}`);
 
-                    // const buttonXPath = '/html/body/div[8]/section/div[2]/section/div[2]/form[1]/section/span[2]/button';
-                    // const buttonElement = await driver.findElement(By.xpath(buttonXPath));
-                    // await buttonElement.click();
+                    await subjectInput.sendKeys(secondHalfSubject);
 
-                    await subjectInput.sendKeys(textToAdd);
-
-
-
+                    const SendbuttonXPath = '/html/body/div[8]/section/div[2]/section/div[2]/form[1]/section/span[2]/button';
+                    const SendbuttonElement = await driver.findElement(By.xpath(SendbuttonXPath));
+                    await SendbuttonElement.click();
 
                     // close
 
-                    await driver.sleep(10000)
+
+                    await driver.sleep(3000)
                         
                     const closeButton = await driver.findElement(By.xpath('/html/body/div[8]/section/header/button[2]'));
                     await closeButton.click();
 
                     
+                    await driver.sleep(3000)
+
                 } else {
                     // Perform a different action when the span does not contain 'free'
                     console.log("Credits required to perform, hence skipping")
+                    const closeButton = await driver.findElement(By.xpath('/html/body/div[8]/section/header/button[2]'));
+                    await closeButton.click();
+
+                    await driver.sleep(3000)
                 }
         }  
     }
 }
 
 
-async function checkForLinkedPremLogo() {
-    await new Promise(resolve => setTimeout(resolve, 30000)); // Wait 30 seconds
+// async function checkForLinkedPremLogo() {
+//     await new Promise(resolve => setTimeout(resolve, 30000)); // Wait 30 seconds
   
-    const elements = await driver.findElements(By.css('li-icon[type="linkedin-premium-gold-icon"][size="small"]'));
+//     const elements = await driver.findElements(By.css('li-icon[type="linkedin-premium-gold-icon"][size="small"]'));
 
-    if (elements.length > 0) {
-        console.log("LinkedIn premium icon is present on the page.");
-        return true;
-    } else {
-        console.log("LinkedIn premium icon is not present on the page.");
-        return false;
-    }
-}
+//     if (elements.length > 0) {
+//         console.log("LinkedIn premium icon is present on the page.");
+//         return true;
+//     } else {
+//         console.log("LinkedIn premium icon is not present on the page.");
+//         return false;
+//     }
+// }
 
 async function checkSpanForText(driver, xpathExpression, textToCheck) {
     await driver.wait(until.elementLocated(By.xpath(xpathExpression)), 30000);

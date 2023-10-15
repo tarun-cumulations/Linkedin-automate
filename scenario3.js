@@ -41,12 +41,47 @@ async function salesNavigator() {
 
     // logged in , go to sales nav
 
+    const currentUrl = await driver.getCurrentUrl();
+
+    if (currentUrl.includes("login")||currentUrl.includes("challenge")) {
+        console.log("Current URL contains 'login':", currentUrl);
+
+        await driver.sleep(5000)
+
+        try{
+        const xpath = '//*[@aria-label="Email or Phone"]'; // XPath for the input element
+
+        const inputElement = await driver.findElement(By.xpath(xpath));
+        await inputElement.sendKeys(linkedin_username);
+
+
+        const passwordXPath = '//*[@aria-label="Password"]'; // XPath for the password input element
+
+        const passwordElement = await driver.findElement(By.xpath(passwordXPath));
+        await passwordElement.sendKeys(linkedin_password);
+
+
+        const signInButton = await driver.findElement(By.css('button[aria-label="Sign in"]'));
+        await signInButton.click();
+
+
+       
+        }catch(e){
+            // directly to challenge case
+        }finally{
+            await driver.sleep(20000)
+        }
+
+
+
+    }
+
     await driver.get("https://www.linkedin.com/sales?trk=d_flagship3_nav&");
     logger.info("CLICKED SAKES NAV");
 
     
 
-    for(i=1;i<=numOfPages;i++){
+    for(i=2;i<=numOfPages;i++){
 
         await driver.get(`${savedSearchId}&page=${i}`);
 
@@ -61,11 +96,15 @@ async function salesNavigator() {
 
         console.log("All goddd  62")
 
-        for (const li of lis) {
+        for(let li of lis){
+            console.log("lis   ooooooooo"+li);
+        }
+
+        for (let li of lis) {
 
             await driver.sleep(10000);
 
-            const linkedinPremiumIcons = await li.findElements(By.css('li-icon[type="linkedin-premium-gold-icon"][size="small"]'));
+            // const linkedinPremiumIcons = await li.findElements(By.css('li-icon[type="linkedin-premium-gold-icon"][size="small"]'));
 
             // console.log("linked status")
 
@@ -75,15 +114,19 @@ async function salesNavigator() {
             // const updatedLi = await driver.findElement(By.css(`li.artdeco-list__item[id="${li.getAttribute("id")}"]`));
 
             // const linkedinPremiumIcons = await updatedLi.findElements(By.css('li-icon[type="linkedin-premium-gold-icon"][size="small"]'));
+            //let linkedinPremiumIcons
 
-
-            if (linkedinPremiumIcons.length > 0) {
+            if (true) {
 
                 await driver.sleep(3000);
                 console.log("NEW CONTAIN LOGO CHECK - EXIST");
-                const messageButton = await li.findElement(By.css('ul.list-style-none.inline-flex > li:nth-child(2) > button'));
+                // const messageButton = await li.findElement(By.css('ul.list-style-none.inline-flex > li:nth-child(2) > button'));
 
-                // Click the second button
+                // // Click the second button
+                // await messageButton.click();
+
+                const updatedLi = await driver.findElement(By.css(`li.artdeco-list__item[id="${await li.getAttribute("id")}"]`));
+                const messageButton = await updatedLi.findElement(By.css('ul.list-style-none.inline-flex > li:nth-child(2) > button'));
                 await messageButton.click();
 
                 const textToCheck = "Free"; 

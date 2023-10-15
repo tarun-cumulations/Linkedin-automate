@@ -87,22 +87,23 @@ async function salesNavigator() {
 
         
         await driver.sleep(5000);
-
-        console.log("All goddd  56")
-
         const parentOl = await driver.findElement(By.css('ol.artdeco-list'));
 
         const lis = await parentOl.findElements(By.css('li.artdeco-list__item'));
+        for (let j=1;j<=25;j++) {
+            if(j%2==0){
+                console.log("SCROLL")
+                await driver.executeScript(`window.scrollTo(0, ${j*500});`); 
+            }
 
-        console.log("All goddd  62")
+            await driver.sleep(6000);
+            const searchResultsContainer = await driver.findElement(By.id('search-results-container'));
 
-        for(let li of lis){
-            console.log("lis   ooooooooo"+li);
-        }
+            // Scroll the search results container by 500 pixels vertically
+            await driver.executeScript('arguments[0].scrollTop += 500;', searchResultsContainer);
 
-        for (let li of lis) {
 
-            await driver.sleep(10000);
+            //await driver.sleep(10000);
 
             // const linkedinPremiumIcons = await li.findElements(By.css('li-icon[type="linkedin-premium-gold-icon"][size="small"]'));
 
@@ -125,9 +126,15 @@ async function salesNavigator() {
                 // // Click the second button
                 // await messageButton.click();
 
-                const updatedLi = await driver.findElement(By.css(`li.artdeco-list__item[id="${await li.getAttribute("id")}"]`));
-                const messageButton = await updatedLi.findElement(By.css('ul.list-style-none.inline-flex > li:nth-child(2) > button'));
-                await messageButton.click();
+                // const updatedLi = await driver.findElement(By.css(`li.artdeco-list__item[id="${await li.getAttribute("id")}"]`));
+                // const messageButton = await updatedLi.findElement(By.css('ul.list-style-none.inline-flex > li:nth-child(2) > button'));
+                // await messageButton.click();
+
+                const listMessageBtn = `/html/body/main/div[1]/div[2]/div[2]/div/ol/li[${j}]/div/div/div[2]/div[2]/ul/li[2]/button`;
+                const buttonElement = await driver.findElement(By.xpath(listMessageBtn));
+                await buttonElement.click();
+
+                ///html/body/main/div[1]/div[2]/div[2]/div/ol/li[1]/div/div/div[2]/div[2]/ul/li[2]/button
 
                 const textToCheck = "Free"; 
                 const creditsXpath= '//*[@id="message-overlay"]/section/div[2]/section/div[2]/div/span[2]';

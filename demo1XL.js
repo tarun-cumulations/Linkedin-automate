@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
 dotenv.config();
-
+const ExcelJS = require('exceljs'); 
 const webdriver = require("selenium-webdriver");
 const { elementTextMatches } = require('selenium-webdriver/lib/until');
 const By = webdriver.By;
@@ -13,9 +13,45 @@ const driver = new webdriver.Builder()
 
 driver.get("https://in.linkedin.com/");
 
-const linkedin_username = process.env.LINKEDIN_USERNAME;
-const linkedin_password = process.env.LINKEDIN_PASSWORD;
-const searchTitle = process.env.SEARCH_TITLE;
+let linkedin_username;
+let linkedin_password;
+let searchTitle;
+let numOfPages;
+let messageToConnections;
+
+readExcel();
+
+async function readExcel() {
+    
+    const workbook = new ExcelJS.Workbook();
+    
+    await workbook.xlsx.readFile('INPUT1.xlsx');
+    
+    const worksheet = workbook.worksheets[0];
+    
+    const a2 = worksheet.getCell('A2').value;
+    const b2 = worksheet.getCell('B2').value;
+    const c2 = worksheet.getCell('C2').value;
+    const d2 = worksheet.getCell('D2').value;
+    const e2 = worksheet.getCell('E2').value;
+
+   
+    linkedin_username = a2.text;
+    linkedin_password = b2;
+    searchTitle = c2;
+    numOfPages = d2;
+    messageToConnections = e2;
+
+    //return { a2, b2, c2, d2, e2 };
+
+    console.log("From excel:");
+    console.log(linkedin_username);
+    console.log(linkedin_password);
+    console.log(searchTitle);
+    console.log(numOfPages);
+    console.log(messageToConnections);
+
+  }
 
 driver.wait(until.elementLocated(By.id("session_key")), 10000)
     .then(element => {
@@ -38,7 +74,7 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
 
         await driver.get(`https://www.linkedin.com/search/results/people/?industry=%5B%2296%22%2C%221594%22%2C%226%22%5D&keywords=${searchTitle}&network=%5B%22S%22%2C%22O%22%5D&origin=FACETED_SEARCH&sid=WPt`);
         
-        for(let i=1;i<=process.env.NUM_OF_PAGES;i++){
+        for(let i=1;i<=numOfPages;i++){
             let firstName = ""
             for(let j=1;j<=10;j++){
 
@@ -77,7 +113,7 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
 
                     const textareaXPath = "//textarea[@id='custom-message']";
                     let textarea = await driver.wait(until.elementLocated(By.xpath(textareaXPath)), 30000);
-                    await textarea.sendKeys(`Hello ${firstName}\n${process.env.MESSAGE_TO_CONNECTION}`);
+                    await textarea.sendKeys(`Hello ${firstName}\n${messageToConnections}`);
                         
                     // FIND SUBMIT AND CLICK
                     await driver.sleep(6000);

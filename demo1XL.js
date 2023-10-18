@@ -78,7 +78,7 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
             let firstName = ""
             for(let j=1;j<=10;j++){
 
-                    await driver.sleep(5000);
+                    await driver.sleep(10000);
                     let skipIteration = false;
                     // FIND ALL THE CONNECT BUTTONS
                     try{
@@ -107,7 +107,7 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
                     let addButton = await driver.wait(until.elementLocated(By.xpath(addButtonXPath)), 30000);
                     await addButton.click();
                     
-                    await driver.sleep(4000);
+                    await driver.sleep(6000);
 
                     // FIND TEXTAREA AND ADD MESSAGE
 
@@ -116,7 +116,7 @@ driver.wait(until.elementLocated(By.id("session_key")), 10000)
                     await textarea.sendKeys(`Hello ${firstName}\n${messageToConnections}`);
                         
                     // FIND SUBMIT AND CLICK
-                    await driver.sleep(6000);
+                    await driver.sleep(8000);
                     const sendButtonXPath = "//button[span[text()='Send']]";
                     let sendButton = await driver.wait(until.elementLocated(By.xpath(sendButtonXPath)), 30000);
                     await sendButton.click();

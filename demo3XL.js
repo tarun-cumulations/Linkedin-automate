@@ -88,7 +88,7 @@ async function salesNavigator() {
     if (currentUrl.includes("login")||currentUrl.includes("challenge")) {
         console.log("Current URL contains 'login':", currentUrl);
 
-        await driver.sleep(5000)
+        await driver.sleep(10000)
 
         try{
         const xpath = '//*[@aria-label="Email or Phone"]'; // XPath for the input element
@@ -126,7 +126,7 @@ async function salesNavigator() {
         await driver.get(`${savedSearchId}&page=${i}`);
 
         
-        await driver.sleep(5000);
+        await driver.sleep(10000);
         const parentOl = await driver.findElement(By.css('ol.artdeco-list'));
 
         const lis = await parentOl.findElements(By.css('li.artdeco-list__item'));
@@ -136,13 +136,13 @@ async function salesNavigator() {
                 await driver.executeScript(`window.scrollTo(0, ${j*500});`); 
             }
 
-            await driver.sleep(6000);
+            await driver.sleep(8000);
             const searchResultsContainer = await driver.findElement(By.id('search-results-container'));
 
             // Scroll the search results container by 500 pixels vertically
             await driver.executeScript('arguments[0].scrollTop += 500;', searchResultsContainer);
 
-                await driver.sleep(3000);
+                await driver.sleep(5000);
                 console.log("NEW CONTAIN LOGO CHECK - EXIST");
                 
 
@@ -171,7 +171,7 @@ async function salesNavigator() {
                     const placeholderText = "Subject (required)";
                     const subjectInput = await driver.findElement(By.css(`input[placeholder="${placeholderText}"]`));
 
-                    await driver.sleep(3000)
+                    await driver.sleep(8000)
 
                     // Calculate the midpoint index
                     const midpoint = Math.floor(textToAdd.length / 2);
@@ -186,7 +186,7 @@ async function salesNavigator() {
                     //Locate the textarea element using the name attribute
                     const textArea = await driver.findElement(By.name('message'));
 
-                    await driver.sleep(3000)
+                    await driver.sleep(5000)
                     // message body
                     await textArea.sendKeys(`Hi\n${messageBodyForSales}`);
 
@@ -199,13 +199,13 @@ async function salesNavigator() {
                     // close
 
 
-                    await driver.sleep(3000)
+                    await driver.sleep(4000)
                         
                     const closeButton = await driver.findElement(By.xpath('/html/body/div[8]/section/header/button[2]'));
                     await closeButton.click();
 
                     
-                    await driver.sleep(3000)
+                    await driver.sleep(5000)
 
                 } else {
                     // Perform a different action when the span does not contain 'free'
@@ -213,7 +213,7 @@ async function salesNavigator() {
                     const closeButton = await driver.findElement(By.xpath('/html/body/div[8]/section/header/button[2]'));
                     await closeButton.click();
 
-                    await driver.sleep(3000)
+                    await driver.sleep(5000)
                 }
         }  
     }

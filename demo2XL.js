@@ -125,7 +125,7 @@ async function readExcel() {
                         console.log("Could not find the Send button:", err);
                     }
 
-                    await driver.sleep(5000);
+                    await driver.sleep(10000);
 
                     ;
 

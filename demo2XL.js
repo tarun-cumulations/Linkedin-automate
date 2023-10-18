@@ -28,12 +28,14 @@ async function readExcel() {
     const c2 = worksheet.getCell('C2').value;
     const d2 = worksheet.getCell('D2').value;
     const e2 = worksheet.getCell('E2').value;
+    const f2 = worksheet.getCell('F2').value;
 
     console.log(a2);
     console.log(b2);
     console.log(c2);
     console.log(d2);
     console.log(e2);  
+    console.log(f2);
 
     return { a2, b2, c2, d2, e2 };
 
@@ -42,13 +44,14 @@ async function readExcel() {
 
 (async () => {
 
-    const { a2, b2, c2, d2, e2 } = await readExcel();
+    const { a2, b2, c2, d2, e2 , f2 } = await readExcel();
 
     const linkedin_username = a2.text;
     const linkedin_password = b2;
     const searchTitle = c2;
-    let numOfPages = d2;
-    let messageToConnection = e2;
+    let startingPage = d2;
+    let numOfPages = e2;
+    let messageToConnection = f2;
 
 
     let driver = await new Builder().forBrowser('chrome').build();
@@ -70,7 +73,7 @@ async function readExcel() {
     logger.info("SUCCESSFULLY LOGGED IN");
     await button.click();
 
-    await driver.get(`https://www.linkedin.com/search/results/people/?network=["F"]&origin=FACETED_SEARCH&sid=jiE&titleFreeText=${searchTitle}`);
+    await driver.get(`https://www.linkedin.com/search/results/people/?network=["F"]&origin=FACETED_SEARCH&sid=jiE&titleFreeText=${searchTitle}&page=${startingPage}`);
 
     const noResultsXPath = '/html/body/div[5]/div[3]/div[2]/div/div[1]/main/div/div/div/section/h2';
     let elements = await driver.findElements(By.xpath(noResultsXPath));

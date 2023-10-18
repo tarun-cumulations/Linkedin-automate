@@ -116,6 +116,7 @@ async function salesNavigator() {
 
     }
 
+    await driver.sleep(20000)
     await driver.get("https://www.linkedin.com/sales?trk=d_flagship3_nav&");
     logger.info("CLICKED SAKES NAV");
 
@@ -187,8 +188,17 @@ async function salesNavigator() {
                     const textArea = await driver.findElement(By.name('message'));
 
                     await driver.sleep(5000)
+
+
+                    // code to bring name
+
+                    let nameElement = await driver.findElement(By.xpath('//h2[starts-with(@aria-label, "Conversation with")]/span'));
+    
+                    let name = await nameElement.getText();
+                    console.log(`Fetched name is: ${name}`);
+
                     // message body
-                    await textArea.sendKeys(`Hi\n${messageBodyForSales}`);
+                    await textArea.sendKeys(`Hi ${name}\n${messageBodyForSales}`);
 
                     await subjectInput.sendKeys(secondHalfSubject);
 
